@@ -1,8 +1,13 @@
-from flask import Flask, Response
+# Author: Orange Blooms
+# Date: September 2023
+
+from flask import Flask, request, Response
 from slackeventsapi import SlackEventAdapter
-import os
 from threading import Thread
 from slack import WebClient
+import json
+from display_handler import display_content
+import os
 
 app = Flask(__name__)
 
@@ -48,6 +53,78 @@ def handle_message(event_data):
 
     thread = Thread(target=send_reply, kwargs={"value": event_data})
     thread.start()
+    return Response(status=200)
+
+@app.route('/display', methods=['POST'])
+def process_display_command():
+    # Extract the text from the command payload
+    command_text = request.form['text']
+
+    # Remove leading and trailing asterisks
+    command_text = command_text.strip('*')
+
+    # Debug print to see the cleaned command text
+    print(f"Cleaned command text: {command_text}")
+
+    # Split the text into individual parameters
+    params = command_text.split()
+
+    # Debug print to see the split parameters
+    print(f"Split parameters: {params}")
+
+    # Ensure there is at least 1 parameter (command)
+    if len(params) < 1:
+        error_message = 'Invalid command. Please use: /display poem <ID> [weekly <0-4>] [file <file_name>] or /display file <file_name>'
+        slack_client.chat_postMessage(channel=request.form['channel_id'], text=error_message)
+        return Response(status=200)
+
+    # Extract the command
+    command = params[0].lower()  # Convert to lowercase for case-insensitive comparison
+
+    # Initialize content_id, weekly, and file_name
+    content_id = None
+    weekly = None
+    file_name = None
+
+    # Check the command and process parameters accordingly
+    if command == 'poem':
+        # Process the parameters for the poem command
+        i = 1
+        while i < len(params):
+            if params[i] == 'weekly':
+                if i + 1 < len(params) and params[i + 1].isdigit():
+                    weekly = params[i + 1]
+                i += 2  # Skip both "weekly" and its value
+            elif params[i] == 'file':
+                if i + 1 < len(params):
+                    file_name = params[i + 1]
+                i += 2  # Skip both "file" and its value
+            else:
+                # Assume it's the content_id
+                content_id = params[i]
+                i += 1
+    elif command == 'file':
+        # Process the parameters for the file command
+        if len(params) < 2:
+            error_message = 'Invalid command. Please use: /display file <file_name>'
+            slack_client.chat_postMessage(channel=request.form['channel_id'], text=error_message)
+            return Response(status=200)
+        file_name = params[1]
+    else:
+        # Invalid command
+        error_message = 'Invalid command. Please use: /display poem <ID> [weekly <0-4>] [file <file_name>] or /display file <file_name>'
+        slack_client.chat_postMessage(channel=request.form['channel_id'], text=error_message)
+        return Response(status=200)
+
+    # Debug prints for extracted parameters
+    print(f"Command: {command}, Content ID: {content_id}, Weekly: {weekly}, File Name: {file_name}")
+
+    # Call the display_content function to generate the message
+    message = display_content(command, content_id, weekly, file_name)
+
+    # Send the response message to the specified channel
+    slack_client.chat_postMessage(channel=request.form['channel_id'], text=message)
+
     return Response(status=200)
 
 
