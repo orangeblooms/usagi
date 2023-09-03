@@ -55,7 +55,6 @@ def handle_message(event_data):
     thread.start()
     return Response(status=200)
 
-
 @app.route('/display', methods=['POST'])
 def process_display_command():
     # Extract the text from the command payload
