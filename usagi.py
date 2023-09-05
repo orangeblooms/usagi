@@ -12,10 +12,8 @@ import os
 app = Flask(__name__)
 
 greetings = ["hi", "hello", "hello there", "hey"]
-SLACK_SIGNING_SECRET = 'c52289aa2a334f3fb414a0f009e89cc6'
-# SLACK_SIGNING_SECRET = os.environ['SLACK_SIGNING_SECRET']
-SLACK_BOT_TOKEN = 'xoxb-5841318108658-5865052016704-WYRCOgOTlXDPNmtkMauFfTQx'
-# SLACK_BOT_TOKEN = os.environ['SLACK_BOT_TOKEN']
+SLACK_SIGNING_SECRET = os.environ['SLACK_SIGNING_SECRET']
+SLACK_BOT_TOKEN = os.environ['SLACK_BOT_TOKEN']
 
 # instantiating Slack client
 slack_client = WebClient(SLACK_BOT_TOKEN)
