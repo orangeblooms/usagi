@@ -12,8 +12,10 @@ import os
 app = Flask(__name__)
 
 greetings = ["hi", "hello", "hello there", "hey"]
-SLACK_SIGNING_SECRET = os.environ['SLACK_SIGNING_SECRET']
-SLACK_BOT_TOKEN = os.environ['SLACK_BOT_TOKEN']
+SLACK_SIGNING_SECRET = 'c52289aa2a334f3fb414a0f009e89cc6'
+# SLACK_SIGNING_SECRET = os.environ['SLACK_SIGNING_SECRET']
+SLACK_BOT_TOKEN = 'xoxb-5841318108658-5865052016704-WYRCOgOTlXDPNmtkMauFfTQx'
+# SLACK_BOT_TOKEN = os.environ['SLACK_BOT_TOKEN']
 
 # instantiating Slack client
 slack_client = WebClient(SLACK_BOT_TOKEN)
@@ -105,11 +107,8 @@ def process_display_command():
                 i += 1
     elif command == 'file':
         # Process the parameters for the file command
-        if len(params) < 2:
-            error_message = 'Invalid command. Please use: /display file <file_name>'
-            slack_client.chat_postMessage(channel=request.form['channel_id'], text=error_message)
-            return Response(status=200)
-        file_name = params[1]
+        if len(params) >= 2:
+            file_name = params[1]
     else:
         # Invalid command
         error_message = 'Invalid command. Please use: /display poem <ID> [weekly <0-4>] [file <file_name>] or /display file <file_name>'
@@ -120,12 +119,16 @@ def process_display_command():
     print(f"Command: {command}, Content ID: {content_id}, Weekly: {weekly}, File Name: {file_name}")
 
     # Call the display_content function to generate the message
-    message = display_content(command, content_id, weekly, file_name)
+    message = display_content(command, content_id, weekly, file_name, request.form['channel_id'])
+    print(message)
 
     # Send the response message to the specified channel
     slack_client.chat_postMessage(channel=request.form['channel_id'], text=message)
 
     return Response(status=200)
+
+
+
 
 
 # Start the server on port 3000
