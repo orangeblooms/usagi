@@ -47,7 +47,9 @@ def display_content(command, content_id, weekly=None, file_name=None, channel_id
         # Define two example poems based on content_id
         example_poems = {
             '12345': "静夜思 (Thoughts in the Silent Night)\n\n床前明月光，疑是地上霜。\n举头望明月，低头思故乡。\n\nTranslation:\n\nBeneath the bed, the bright moonlight is like frost on the ground.\nI raise my head to gaze at the bright moon, and lower it to think of my hometown.",
-            '67890': "The moon in the sky,\nShines so bright and high,\nA world full of dreams,\nIn its silver beams."
+            '67890': "The moon in the sky,\nShines so bright and high,\nA world full of dreams,\nIn its silver beams.",
+            '54321': "Rabindranath Tagore's Gitanjali:\n\nWhere the mind is without fear and the head is held high\nWhere knowledge is free\nWhere the world has not been broken up into fragments\nBy narrow domestic walls\nWhere words come out from the depth of truth\nWhere tireless striving stretches its arms towards perfection\nWhere the clear stream of reason has not lost its way\nInto the dreary desert sand of dead habit\nWhere the mind is led forward by thee\nInto ever-widening thought and action\nInto that heaven of freedom, my Father, let my country awake.",
+            '98765': "Basho's Haiku (Japanese poem):\n\n古池や\n蛙飛び込む\n水の音\n\nTranslation:\n\nAn old silent pond...\nA frog jumps into the pond—\nSplash! Silence again."
         }
 
         # Check if the provided content_id matches an example poem
@@ -69,8 +71,10 @@ def display_content(command, content_id, weekly=None, file_name=None, channel_id
                 poem_schedule[content_id][channel_id] = weekly_int
                 save_poem_schedule(poem_schedule)
 
-                if weekly_int < 0 or weekly_int > 6 or weekly_int != datetime.datetime.now().weekday():
+                if weekly_int < 0 or weekly_int > 6:
                     return "Invalid weekly value. Please use a number between 0 (Monday) and 6 (Sunday)."
+                if weekly_int != datetime.datetime.now().weekday():
+                    return "Today is not the scheduled day."
             except ValueError:
                 return "Invalid weekly value. Please use a number between 0 (Monday) and 6 (Sunday)."
 

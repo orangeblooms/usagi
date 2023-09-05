@@ -9,7 +9,7 @@ Usagi is designed to respond to messages in your Slack workspace, specifically h
 ## Features
 
 - Responds to greetings in Slack messages.
-- Supports a custom `/display` command to interact with the bot for displaying content.
+- Supports a custom commands to interact with the bot for displaying content.
 - Can display poems, the contents of files, or save poems to files.
 - Handles different parameters like content ID, weekly scheduling, and file names.
 
@@ -37,12 +37,35 @@ Usagi is designed to respond to messages in your Slack workspace, specifically h
 
 ## Usage
 
-- Mention the bot with a greeting to receive a friendly response.
+### `/configure` Command
 
-- Use the `/display` command to interact with the bot for displaying content. You can provide various parameters to specify what you want to display or save.
+The `/configure` command allows you to configure a Slack channel for poem scheduling. You can use the following syntax:
+```
+/configure add|remove <poem_ID> [weekly <0-4>]
+```
+- `add|remove`: Use `add` to add a poem to the channel's schedule, or `remove` to remove a poem.
+- `<poem_ID>`: Replace with the ID of the poem you want to schedule or remove.
+- `[weekly <0-4>]`: Optional. Specify a custom day of the week (0 = Monday, 4 = Friday) for the poem's schedule.
 
-   - Examples:
-     - `/display poem 12345`
-     - `/display poem 67890 weekly 2`
-     - `/display file my_poem.txt`
-     - `/display file my_poem.txt weekly 3`
+- Examples:
+  - `/configure add 12345 weekly 2`
+
+### `/display` Command
+
+The `/display` command is used to display poems, read poem files, and save poems to files. You can use the following syntax:
+
+```
+/display poem <ID> [weekly <0-4>] [file <file_name>]
+```
+- `<ID>`: Replace with the ID of the poem you want to display.
+- `[weekly <0-4>]`: Optional. Specify a day of the week (0 = Monday, 4 = Friday) to schedule the poem for weekly display.
+- `[file <file_name>]`: Optional. Specify a file name to save the poem content to a file.
+
+- Examples:
+  - `/display poem 12345`
+  - `/display poem 67890 weekly 2`
+  - `/display file my_poem.txt`
+
+### `/list` Command
+
+The `/list` command is used to list poems that are scheduled for weekly display in a specific Slack channel.
