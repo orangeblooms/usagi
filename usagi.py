@@ -8,6 +8,7 @@ from slack import WebClient
 import json
 from display_handler import *
 from list_handler import *
+from configure_handler import *
 import os
 
 app = Flask(__name__)
@@ -55,6 +56,58 @@ def handle_message(event_data):
     thread = Thread(target=send_reply, kwargs={"value": event_data})
     thread.start()
     return Response(status=200)
+
+
+@app.route('/configure', methods=['POST'])
+def configure_channel():
+    # Extract parameters from the request
+    channel_id = request.form.get('channel_id')
+    command_text = request.form.get('text')
+
+    # Check if the parameters are valid
+    if not command_text:
+        return "Invalid command. Please provide a channel ID and a configuration command."
+
+    # Remove leading and trailing asterisks
+    command_text = command_text.strip('*')
+
+    # Debug print to see the cleaned command text
+    print(f"Cleaned command text: {command_text}")
+
+    # Split the text into individual parameters
+    params = command_text.split()
+
+    # Debug print to see the split parameters
+    print(f"Split parameters: {params}")
+
+    # Ensure there is at least one parameter in the command
+    if len(params) < 1:
+        return "Invalid command. Please provide a configuration command."
+
+    # Extract the action (e.g., "add" or "remove") and the poem ID
+    action = params[0].lower()  # Convert to lowercase for case-insensitive comparison
+    print(action)
+    poem_id = None
+
+    if len(params) > 1:
+        poem_id = params[1]
+
+    # Optional: Extract the custom weekly schedule (if provided)
+    custom_weekly_schedule = 3
+
+    if len(params) > 2 and params[2].lower() == "weekly":
+        if len(params) > 3 and params[3].isdigit():
+            custom_weekly_schedule = int(params[3])
+        else:
+            return "Invalid weekly schedule. Please provide a number between 0 and 6."
+
+    # Store the configuration in your data structure (e.g., JSON file or database)
+    message = configure_channel_for_poem(action, channel_id, poem_id, custom_weekly_schedule)
+    print(message)
+
+    # Return a confirmation message
+    return message
+
 
 @app.route('/display', methods=['POST'])
 def process_display_command():
