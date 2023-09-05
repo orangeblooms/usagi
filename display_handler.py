@@ -59,11 +59,6 @@ def display_content(command, content_id, weekly=None, file_name=None, channel_id
         # Include the Poem ID at the beginning of the content
         content_with_id = f'Poem ID: {content_id}\n\n{content}'
 
-        # Check if it's the correct day to display the poem
-        if is_weekly_day(content_id, channel_id, poem_schedule):
-            # Load and return the poem for the current day
-            return content_with_id
-
         # Check if the weekly parameter is provided and if it's a valid value (0-4)
         if weekly is not None:
             try:
@@ -78,6 +73,11 @@ def display_content(command, content_id, weekly=None, file_name=None, channel_id
                     return "Invalid weekly value. Please use a number between 0 (Monday) and 6 (Sunday)."
             except ValueError:
                 return "Invalid weekly value. Please use a number between 0 (Monday) and 6 (Sunday)."
+
+        # Check if it's the correct day to display the poem
+        if is_weekly_day(content_id, channel_id, poem_schedule):
+            # Load and return the poem for the current day
+            return content_with_id
 
         # Check if a file_name is provided and save the poem to a file if requested
         if file_name is not None:
