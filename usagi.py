@@ -6,14 +6,17 @@ from slackeventsapi import SlackEventAdapter
 from threading import Thread
 from slack import WebClient
 import json
-from display_handler import display_content
+from display_handler import *
+from list_handler import *
 import os
 
 app = Flask(__name__)
 
 greetings = ["hi", "hello", "hello there", "hey"]
-SLACK_SIGNING_SECRET = os.environ['SLACK_SIGNING_SECRET']
-SLACK_BOT_TOKEN = os.environ['SLACK_BOT_TOKEN']
+SLACK_SIGNING_SECRET = '139acd7bf8b16607c2471bf44e29079e'
+# SLACK_SIGNING_SECRET = os.environ['SLACK_SIGNING_SECRET']
+SLACK_BOT_TOKEN = 'xoxb-5841318108658-5865052016704-PgeNpMzKqWd3peMifXBabm0V'
+# SLACK_BOT_TOKEN = os.environ['SLACK_BOT_TOKEN']
 
 # instantiating Slack client
 slack_client = WebClient(SLACK_BOT_TOKEN)
@@ -126,7 +129,24 @@ def process_display_command():
     return Response(status=200)
 
 
+@app.route('/list', methods=['POST'])
+def list_weekly_poems_route():
+    # Read the existing poem schedule
+    poem_schedule = read_poem_schedule()  # Assuming you have a function to read the poem schedule JSON
 
+    # Call the list_weekly_poems function to get a list of weekly poems
+    weekly_poems = list_weekly_poems(poem_schedule)
+
+    if weekly_poems:
+        # Create a message with the list of weekly poems
+        message = "\n".join(weekly_poems)
+    else:
+        message = "No poems on a weekly schedule found."
+
+    # Send the response message to the specified channel
+    slack_client.chat_postMessage(channel=request.form['channel_id'], text=message)
+
+    return Response(status=200)
 
 
 # Start the server on port 3000
